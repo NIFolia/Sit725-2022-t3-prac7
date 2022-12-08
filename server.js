@@ -1,84 +1,17 @@
 var express = require("express")
 var app = express()
 var cors = require("cors")
-let projectCollection;
+let dbConnect = require("./dbConnect")
+let projectRouters = require("./routes/projectRoutes")
+//let projectCollection;
 
 app.use(express.static(__dirname + '/public'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors())
-
-//mongoDb connection...
-const MongoClient = require('mongodb').MongoClient;
-
-//add database connections...
-const uri = 'mongodb+srv://Niko:233@cluster0.ela4eij.mongodb.net/?retryWrites=true&w=majority'
-const client = new MongoClient(uri, { useNewUrlParser: true })
-
-// insert project...
-const insertProjects = (project, callback) => {
-    projectCollection.insert(project, callback);
-}
-
-const getProjects = (callback) => {
-    projectCollection.find({}).toArray(callback);
-}
-
-const createColllection = (collectionName) => {
-    client.connect((err, db) => {
-        projectCollection = client.db().collection(collectionName);
-        if (!err) {
-            console.log('MongoDB Connected')
-        }
-        else {
-            console.log("DB Error: ", err);
-            process.exit(1);
-        }
-    })
-}
-
-const cardList = [
-    {
-        title: "Feky2",
-        image: "images/Feky2.png",
-        link: "About Feky2",
-        desciption: "Demo desciption about Feky2"
-    },
-    {
-        title: "Feky3",
-        image: "images/Feky3.png",
-        link: "About Feky3",
-        desciption: "Demo desciption about Feky3"
-    }
-]
-
-app.get('/api/projects', (req, res) => {
-    getProjects((err, result) => {
-        if (err) {
-            res.json({ statusCode: 400, message: err })
-        }
-        else {
-            res.json({ statusCode: 200, message: "Success", data: result })
-        }
-    })
-})
-
-// post api....
-app.post('/api/projects', (req, res) => {
-    console.log("New Project added", req.body)
-    var newProject = req.body;
-    insertProjects(newProject, (err, result) => {
-        if (err) {
-            res.json({ statusCode: 400, message: err })
-        }
-        else {
-            res.json({ statusCode: 200, message: "Project Successfully added", data: result })
-        }
-    })
-})
+app.use('/api/projects', projectRouters)
 
 var port = process.env.port || 3000;
 app.listen(port, () => {
     console.log("App listening to http://localhost:" + port)
-    createColllection("Fekys")
 })
