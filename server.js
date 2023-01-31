@@ -6,8 +6,8 @@ let dbConnect = require("./dbConnect");
 
 //var app = require('express')();​
 
-let http = require('http').createServer(app);
-let io = require('socket.io')(http);
+let http = require("http").createServer(app);
+let io = require("socket.io")(http);
 
 //const MongoClient = require('mongodb').MongoClient;​
 
@@ -15,7 +15,7 @@ let io = require('socket.io')(http);
 
 let projectsRoute = require('./routes/projectRoutes')
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -50,23 +50,14 @@ app.get('/addTwoNumbers/:firstNumber/:secondNumber', function (req, res, next) {
 })
 
 //socket test​
-
-io.on('connection', (socket) => {
-
-    console.log('a user connected');
-
-    socket.on('disconnect', () => {
-
-        console.log('user disconnected');
-
+io.on("connection", (socket) => {
+    console.log("a new user has connected");
+    socket.on("disconnect", () => {
+        console.log("user disconnected");
     });
-
     setInterval(() => {
-
-        socket.emit('number', parseInt(Math.random() * 10));
-
+        socket.emit("number", parseInt(Math.random() * 10));
     }, 1000);
-
 });
 
 http.listen(port, () => {
